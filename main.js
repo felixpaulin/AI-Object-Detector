@@ -126,8 +126,6 @@ console.log(
     ctx.strokeStyle = "lime";
     ctx.strokeRect(x, y, w, h);
 
-    ctx.save();
-
     // un-flip text so it reads normally
     ctx.scale(-1, 1);
 
