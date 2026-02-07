@@ -131,17 +131,6 @@ console.log(
     // un-flip text so it reads normally
     ctx.scale(-1, 1);
 
-    ctx.fillStyle = "blue";
-    ctx.font = "16px Arial";
-    ctx.fillText(
-  `${match.id} ${match.label || match.class}`,
-  -(x + w) + 4,
-  y + 14
-);
-
-ctx.restore();
-
-
     ctx.restore();
 
     ctx.fillStyle = "Blue";
