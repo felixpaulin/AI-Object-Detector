@@ -114,7 +114,7 @@ console.log(
     const scaleX = drawWidth / displayWidth;
     const scaleY = drawHeight / displayHeight;
 
-    if (match.stableFrames < 3) return;
+    if (match.stableFrames < 5) return;
 
 // ---- draw mirrored box + text ----
 ctx.save();
