@@ -160,6 +160,10 @@ canvas.addEventListener("click", e => {
 (async () => {
   loadMemory();
   await startCamera();
+  
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
   await loadModel();
   detectLoop();
 })();
