@@ -64,7 +64,7 @@ async function detectLoop() {
 
     //matches objects from last frame to current frame
     let match = trackedObjects.find(o => distance(o.center, center) < 50);
-
+    match.stableFrames = (match.stableFrames || 0) + 1;
     // if object is not a match it gives it a new ID and creates a new object in the script, so not physically
     if (!match) {
       match = {
@@ -79,12 +79,16 @@ async function detectLoop() {
       match.bbox = p.bbox;
     }
 
+    
     updated.push(match);
-    //chekcs if it already knows this objects label to label it on the screen.
+    //checks if it already knows this objects label to label it on the screen.
     const memory = learnedObjects.find(o => o.class === match.class);
     if (memory && !match.label) {
       match.label = memory.label;
     }
+    if (match.stableFrames < 3) {
+      return;
+    }   
     // Draw box
     // draws a box around current object/s, || means that if it cannot find this then use this so in this case if it connot find match.label it uses match.class
     ctx.lineWidth = 3;
