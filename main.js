@@ -64,7 +64,6 @@ async function detectLoop() {
 
     //matches objects from last frame to current frame
     let match = trackedObjects.find(o => distance(o.center, center) < 50);
-    match.stableFrames = (match.stableFrames || 0) + 1;
     // if object is not a match it gives it a new ID and creates a new object in the script, so not physically
     if (!match) {
       match = {
@@ -78,9 +77,6 @@ async function detectLoop() {
       match.center = center;
       match.bbox = p.bbox;
     }
-    if (match.stableFrames < 3) {
-      return;
-    } 
     
     updated.push(match);
     //checks if it already knows this objects label to label it on the screen.
