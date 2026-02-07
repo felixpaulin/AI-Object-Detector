@@ -78,17 +78,16 @@ async function detectLoop() {
       match.center = center;
       match.bbox = p.bbox;
     }
-
+    if (match.stableFrames < 3) {
+      return;
+    } 
     
     updated.push(match);
     //checks if it already knows this objects label to label it on the screen.
     const memory = learnedObjects.find(o => o.class === match.class);
     if (memory && !match.label) {
       match.label = memory.label;
-    }
-    if (match.stableFrames < 3) {
-      return;
-    }   
+    }  
     // Draw box
     // draws a box around current object/s, || means that if it cannot find this then use this so in this case if it connot find match.label it uses match.class
     ctx.lineWidth = 3;
