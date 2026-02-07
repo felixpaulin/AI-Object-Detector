@@ -86,11 +86,13 @@ console.log(
         class: p.class,
         label: null,
         bbox: p.bbox,
-        center
+        center,
+        stableFrames: 1
       };
     } else {
       match.center = center;
       match.bbox = p.bbox;
+      match.stableFrames++;
     }
     
     updated.push(match);
@@ -111,6 +113,8 @@ console.log(
     // compute scale between draw space and display space
     const scaleX = drawWidth / displayWidth;
     const scaleY = drawHeight / displayHeight;
+
+    if (match.stableFrames < 3) return;
 
 // ---- draw mirrored box + text ----
 ctx.save();
