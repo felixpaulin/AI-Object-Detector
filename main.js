@@ -112,32 +112,35 @@ console.log(
     const scaleX = drawWidth / displayWidth;
     const scaleY = drawHeight / displayHeight;
 
-    // Draw box
-    // draws a box around current object/s, || means that if it cannot find this then use this so in this case if it connot find match.label it uses match.class
-    // ---- draw mirrored box ----
-    ctx.save();
+// ---- draw mirrored box + text ----
+ctx.save();
 
-    // flip horizontally
-    ctx.translate(canvas.width, 0);
-    ctx.scale(-1, 1);
+// flip entire drawing space
+ctx.translate(canvas.width, 0);
+ctx.scale(-1, 1);
 
-    // draw box in flipped space
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = "lime";
-    ctx.strokeRect(x, y, w, h);
+// draw box (mirrored)
+ctx.lineWidth = 3;
+ctx.strokeStyle = "lime";
+ctx.strokeRect(x, y, w, h);
 
-    // un-flip text so it reads normally
-    ctx.scale(-1, 1);
+// draw text at same mirrored position
+ctx.save();
 
-    ctx.restore();
+// un-flip text so it reads normally
+ctx.scale(-1, 1);
 
-    ctx.fillStyle = "Blue";
-    ctx.font = "16px Arial";
-    ctx.fillText(
-      `${match.id} ${match.label || match.class}`,
-        x + 4,
-       y + 14
-    );
+ctx.fillStyle = "blue";
+ctx.font = "16px Arial";
+ctx.fillText(
+  `${match.id} ${match.label || match.class}`,
+  -(x + w) + 4,
+  y + 14
+);
+
+ctx.restore(); // restore text flip
+ctx.restore(); // restore canvas
+
 
   });
 
