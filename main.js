@@ -74,8 +74,8 @@ console.log(
   predictions.forEach(p => {
     if (p.score < 0.5) return;
 
-    const [x, y, w, h] = p.bbox;
-    const center = { x: x + w / 2, y: y + h / 2 };
+   // const [x, y, w, h] = p.bbox;
+   //const center = { x: x + w / 2, y: y + h / 2 };
 
     //matches objects from last frame to current frame
     let match = trackedObjects.find(o => distance(o.center, center) < 50);
@@ -101,6 +101,20 @@ console.log(
     }  
     // Draw box
     // draws a box around current object/s, || means that if it cannot find this then use this so in this case if it connot find match.label it uses match.class
+   
+    // get actual display size for video
+    const displayWidth = video.clientWidth;
+    const displayHeight = video.clientHeight;
+
+    // get real canvas size
+    const drawWidth = canvas.width;
+    const drawHeight = canvas.height;
+
+    // compute scale between draw space and display space
+    const scaleX = drawWidth / displayWidth;
+    const scaleY = drawHeight / displayHeight;
+
+
     ctx.lineWidth = 3;
     ctx.strokeStyle = "lime";
     ctx.strokeRect(x, y, w, h);
