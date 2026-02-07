@@ -1,5 +1,5 @@
 // gets video, status and overlay info from HTML file
-const video = document.getElementById("video"); 
+const video = document.getElementById("video");  
 const status = document.getElementById("status");
 const canvas = document.getElementById("overlay");
 // for canvas drawing.
