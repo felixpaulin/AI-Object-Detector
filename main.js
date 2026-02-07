@@ -74,8 +74,8 @@ console.log(
   predictions.forEach(p => {
     if (p.score < 0.5) return;
 
-   // const [x, y, w, h] = p.bbox;
-   //const center = { x: x + w / 2, y: y + h / 2 };
+   const [x, y, w, h] = p.bbox;
+   const center = { x: x + w / 2, y: y + h / 2 };
 
     //matches objects from last frame to current frame
     let match = trackedObjects.find(o => distance(o.center, center) < 50);
