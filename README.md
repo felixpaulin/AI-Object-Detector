@@ -1,6 +1,6 @@
 This is a browser-based AI object detector that uses a webcam to detect objects in real time and allows the user to teach the system new object by clicking on detected objects and entering the name of the object into the prompt box.
 
-The application runs entirely on the client side using JavaScript and TensorFlow.js and only requires the user to launch the start server.bat file to open the browser in localhost.
+The AI object detector runs entirely on the client side using JavaScript and TensorFlow.js and only requires the user to launch the start-server.bat file to open the browser in localhost.
 
 ---
 
@@ -41,5 +41,5 @@ Features
 Due to browser security restrictions, the project must be run using a local HTTP server.
 
 1: Run the start-server.bat file to launch a browser window in localhost
-2: Run the index.HTML file and it should launch in the browser window
+2: The batch file will also automatically start the ai detector
 3: Enjoy
