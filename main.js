@@ -28,6 +28,13 @@ function distance(a, b) {
 async function startCamera() {
   const stream = await navigator.mediaDevices.getUserMedia({ video: true });
   video.srcObject = stream;
+
+  return new Promise(resolve => {
+    video.onloadedmetadata = () => {
+      video.play();
+      resolve();
+    };
+  });
 }
 
 /* ---------- LOAD AI MODEL ---------- */
