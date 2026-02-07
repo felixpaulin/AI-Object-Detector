@@ -151,6 +151,13 @@ ctx.restore(); // restore canvas
 
   });
 
+  trackedObjects.forEach(oldObj => {
+    const stillHere = updated.find(o => o.id === oldObj.id); 
+    if (!stillHere) {
+      console.log("Object has exited:", oldObj.id);
+    }
+  });
+
   trackedObjects = updated;
   updateObjectList(trackedObjects);
   requestAnimationFrame(detectLoop);
