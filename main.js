@@ -129,6 +129,7 @@ console.log(
     ctx.restore();
 
     ctx.fillStyle = "Blue";
+    ctx.scale(1, -1);
     ctx.font = "16px Arial";
     ctx.fillText(
       `${match.id} ${match.label || match.class}`,
