@@ -99,9 +99,7 @@ console.log(
     if (memory && !match.label) {
       match.label = memory.label;
     }  
-    // Draw box
-    // draws a box around current object/s, || means that if it cannot find this then use this so in this case if it connot find match.label it uses match.class
-   
+
     // get actual display size for video
     const displayWidth = video.clientWidth;
     const displayHeight = video.clientHeight;
@@ -114,10 +112,22 @@ console.log(
     const scaleX = drawWidth / displayWidth;
     const scaleY = drawHeight / displayHeight;
 
+    // Draw box
+    // draws a box around current object/s, || means that if it cannot find this then use this so in this case if it connot find match.label it uses match.class
+    // ---- draw mirrored box ----
+    ctx.save();
 
+    // flip horizontally
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+
+    // draw box in flipped space
     ctx.lineWidth = 3;
     ctx.strokeStyle = "lime";
     ctx.strokeRect(x, y, w, h);
+
+    ctx.restore();
+
     ctx.fillStyle = "Blue";
     ctx.font = "16px Arial";
     ctx.fillText(
