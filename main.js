@@ -54,6 +54,14 @@ async function detectLoop() {
   //removes old boxes to prevent stacking
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+console.log(
+  video.videoWidth,
+  video.videoHeight,
+  canvas.width,
+  canvas.height
+);
+
+
   let updated = [];
   //filters confidence so leaves things if ai is not atleast 50% sure
   predictions.forEach(p => {
