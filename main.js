@@ -127,9 +127,9 @@ console.log(
     ctx.strokeRect(x, y, w, h);
 
     ctx.restore();
+const textX = canvas.width - (x + w) + 4;
 
     ctx.fillStyle = "Blue";
-    ctx.scale(1, -1);
     ctx.font = "16px Arial";
     ctx.fillText(
       `${match.id} ${match.label || match.class}`,
