@@ -87,7 +87,8 @@ console.log(
         label: null,
         bbox: p.bbox,
         center,
-        stableFrames: 1
+        stableFrames: 1,
+        locked: false 
       };
     } else {
       match.center = center;
@@ -95,6 +96,8 @@ console.log(
       match.stableFrames++;
     }
     
+    if (match.locked) return;
+
     updated.push(match);
     //checks if it already knows this objects label to label it on the screen.
     const memory = learnedObjects.find(o => o.class === match.class);
@@ -187,6 +190,7 @@ canvas.addEventListener("click", e => {
   if (!label) return;
 
   clicked.label = label;
+  clicked.locked = true;
 
   //Saves objects learnt
   learnedObjects.push({
