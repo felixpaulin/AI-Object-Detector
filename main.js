@@ -14,8 +14,6 @@ let nextId = 1;
 let model;
 //remembers this class = this label
 let learnedObjects = [];
-// makes it possible to log enter and exit of objects
-let eventLog = [];
 
 //tracks objects from frame to frame
 function distance(a, b) {
@@ -97,13 +95,6 @@ console.log(
       match.bbox = p.bbox;
       match.stableFrames++;
     }
-    
-      eventLog.push({
-      time: Date.now(),
-      type: "DETECTED",
-      id: match.id,
-      class: match.class
-  });
 
     if (match.locked) return;
 
@@ -160,15 +151,10 @@ ctx.restore(); // restore canvas
 
   });
 
-  trackedObjects.forEach(oldObj => {
+    trackedObjects.forEach(oldObj => {
     const stillHere = updated.find(o => o.id === oldObj.id); 
     if (!stillHere) {
-     eventLog.push({
-     time: Date.now(),
-     type: "EXIT",
-     id: oldObj.id
-  });
-
+      console.log("Object has exited:", oldObj.id);
     }
   });
 
@@ -212,12 +198,6 @@ canvas.addEventListener("click", e => {
 
   clicked.label = label;
   clicked.locked = true;
-  eventLog.push({
-  time: Date.now(),
-  type: "LABELED",
-  id: clicked.id,
-  label: label
-});
 
   //Saves objects learnt
   learnedObjects.push({
