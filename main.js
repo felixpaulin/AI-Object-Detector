@@ -219,8 +219,6 @@ canvas.addEventListener("click", e => {
   label: label
 });
 
-console.table(eventLog);
-
   //Saves objects learnt
   learnedObjects.push({
     class: clicked.class,
