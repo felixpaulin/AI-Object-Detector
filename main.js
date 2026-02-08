@@ -142,12 +142,12 @@ console.log(
 
     updated.push(match);
     //checks if it already knows this objects label to label it on the screen.
-    /*const memory = learnedObjects.find(o => o.class === match.class);
+    const memory = learnedObjects.find(o => o.class === match.class);
     if (memory && !match.label) {
       match.label = memory.label;
     }  
-*/
-    // get actual display size for video
+
+   // get actual display size for video
     const displayWidth = video.clientWidth;
     const displayHeight = video.clientHeight;
 
