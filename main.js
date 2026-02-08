@@ -12,8 +12,10 @@ let trackedObjects = [];
 let nextId = 1;
 //stores ai model
 let model;
-// remembers this class = this label
+//remembers this class = this label
 let learnedObjects = [];
+// makes it possible to log enter and exit of objects
+let eventLog = [];
 
 //tracks objects from frame to frame
 function distance(a, b) {
@@ -96,6 +98,13 @@ console.log(
       match.stableFrames++;
     }
     
+      eventLog.push({
+      time: Date.now(),
+      type: "DETECTED",
+      id: match.id,
+      class: match.class
+  });
+
     if (match.locked) return;
 
     updated.push(match);
@@ -206,6 +215,14 @@ canvas.addEventListener("click", e => {
   });
   saveMemory();
 });
+ 
+// decides which bin to send the object to based on its label.
+function decideBin(object) {
+  if (object.label === "plastic") return 1;
+  if (object.label === "paper") return 2;
+  return 3;
+}
+
 
 /* ---------- START ---------- */
 // this starts the whole thing, async () => makes it beign imediatly on file open and then loads the ai memory, then loads the camera and the model, the order matters, then it starts the detecting process 
