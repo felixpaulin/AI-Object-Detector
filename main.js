@@ -1,3 +1,9 @@
+// ESP32 READY:
+// - Auto-connect on first click
+// - sendToESP32() is the ONLY hardware interface
+// - Message format: BIN_1 / BIN_2 / BIN_3
+// type testESP() in the console to test sending a message to the ESP32 and the servo move.
+
 // gets video, status and overlay info from HTML file
 const video = document.getElementById("video");  
 const status = document.getElementById("status");
@@ -261,7 +267,18 @@ function sendToESP32(message) {
     espSocket.send(message);
   }
 }
+  console.log(
+   "Sent",
+    message,
+    "at",
+    performance.now().toFixed(2),
+    "ms"
+);
 
+
+window.testESP = () => {
+  sendToESP32("BIN_1");
+}
 
 /* ---------- START ---------- */
 // this starts the whole thing, async () => makes it beign imediatly on file open and then loads the ai memory, then loads the camera and the model, the order matters, then it starts the detecting process 
