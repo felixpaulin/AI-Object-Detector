@@ -225,6 +225,12 @@ function decideBin(object) {
   return 3;
 }
 
+function sendToESP32(message) {
+  if (espSocket.readyState === WebSocket.OPEN) {
+    espSocket.send(message);
+  }
+}
+
 
 /* ---------- START ---------- */
 // this starts the whole thing, async () => makes it beign imediatly on file open and then loads the ai memory, then loads the camera and the model, the order matters, then it starts the detecting process 
