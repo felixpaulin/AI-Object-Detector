@@ -82,6 +82,26 @@ video {
 </head>
 
 <body>
+  <script>
+    // Early debug: confirm this HTML file is the one the browser loaded
+    console.log('index.html (debug) loaded at', new Date().toISOString());
+    const dbg = document.createElement('div');
+    dbg.id = 'debugBanner';
+    dbg.textContent = 'DEBUG: index.html loaded';
+    Object.assign(dbg.style, {
+      position: 'fixed',
+      left: '10px',
+      top: '10px',
+      background: 'rgba(255,0,0,0.85)',
+      color: 'white',
+      padding: '6px 10px',
+      zIndex: 99999999,
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '13px',
+      borderRadius: '4px'
+    });
+    document.addEventListener('DOMContentLoaded', () => document.body.appendChild(dbg));
+  </script>
 <div id="sidebar">
   <h3>Objects detected</h3>
   <ul id="objectList"></ul>
