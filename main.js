@@ -25,6 +25,29 @@ espSocket.onerror = err => {
   console.error("ESP32 socket error", err);
 };
 
+let espPort = null;
+let espWriter = null;
+let askedForESP = false;
+
+async function connectESP32() {
+  if (askedForESP) return;
+  askedForESP = true;
+
+  try {
+    espPort = await navigator.serial.requestPort();
+    await espPort.open({ baudRate: 115200 });
+    espWriter = espPort.writable.getWriter();
+
+    console.log("ESP32 connected");
+  } catch (err) {
+    console.error("ESP32 connection failed:", err);
+  }
+}
+
+document.addEventListener("click", () => {
+  connectESP32();
+}, { once: true });
+
 
 //tracks objects from frame to frame
 function distance(a, b) {
