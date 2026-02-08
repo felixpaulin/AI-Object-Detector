@@ -262,10 +262,21 @@ function decideBin(object) {
   return 3;
 }
 
-function sendToESP32(message) {
-  if (espSocket.readyState === WebSocket.OPEN) {
+async function sendToESP32(message) {
+
+  // --- SIMULATOR MODE (WebSocket) ---
+  if (typeof espSocket !== "undefined" &&
+      espSocket.readyState === WebSocket.OPEN) {
     espSocket.send(message);
+    return;
   }
+
+  // --- USB MODE (ESP32) ---
+  if (!espWriter) return;
+
+  const data = new TextEncoder().encode(message + "\n");
+  await espWriter.write(data);
+
 
   console.log(
    "Sent",
