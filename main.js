@@ -266,7 +266,7 @@ function sendToESP32(message) {
   if (espSocket.readyState === WebSocket.OPEN) {
     espSocket.send(message);
   }
-}
+
   console.log(
    "Sent",
     message,
@@ -274,7 +274,7 @@ function sendToESP32(message) {
     performance.now().toFixed(2),
     "ms"
 );
-
+}
 
 window.testESP = () => {
   sendToESP32("BIN_1");
