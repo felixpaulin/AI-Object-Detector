@@ -163,7 +163,12 @@ ctx.restore(); // restore canvas
   trackedObjects.forEach(oldObj => {
     const stillHere = updated.find(o => o.id === oldObj.id); 
     if (!stillHere) {
-      console.log("Object has exited:", oldObj.id);
+     eventLog.push({
+     time: Date.now(),
+     type: "EXIT",
+     id: oldObj.id
+  });
+
     }
   });
 
@@ -207,6 +212,14 @@ canvas.addEventListener("click", e => {
 
   clicked.label = label;
   clicked.locked = true;
+  eventLog.push({
+  time: Date.now(),
+  type: "LABELED",
+  id: clicked.id,
+  label: label
+});
+
+console.table(eventLog);
 
   //Saves objects learnt
   learnedObjects.push({
