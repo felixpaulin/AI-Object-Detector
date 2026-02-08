@@ -41,53 +41,10 @@ video {
   margin-bottom: 4px;
 }
 
-#ui-overlay {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-
-  z-index: 2147483647; /* max safe z-index */
-  pointer-events: auto;
-}
-
-#ui-overlay button {
-  padding: 10px 16px;
-  font-size: 16px;
-
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 6px;
-
-  cursor: pointer;
-}
-
-#ui-overlay button:hover {
-  background: #45a049;
-}
-
-#ui-overlay div {
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  color: white;
-}
-
-
   </style>
 </head>
 
 <body>
-
-<div id="ui-overlay">
-  <button id="connectESP">Connect ESP32</button>
-  <div id="espStatus">ESP32: disconnected</div>
-</div>
-
-
 <div id="sidebar">
   <h3>Objects detected</h3>
   <ul id="objectList"></ul>
