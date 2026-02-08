@@ -3,88 +3,81 @@
 <head>
   <title>AI Object Detector</title>
   <style>
-    body { background: #111; color: rgb(51, 255, 0); text-align: center; }
-    video { border: 2px solid rgb(0, 255, 0); }
-  canvas {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  pointer-events: auto;
-}
-video {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%) scaleX(-1);
-}
+    body { 
+      background: #111; 
+      color: rgb(51, 255, 0); 
+      text-align: center; 
+    }
 
-#sidebar {
-  position: absolute;
-  right: 20px;
-  top: 30px;
-  width: 200px;
-  height: 500px;
-  background: rgba(255, 0, 0, 0.6);
-  border: 2px solid #0f0;
-  padding: 10px;
-  font-size: 14px;
-}
+    video { 
+      border: 2px solid rgb(0, 255, 0); 
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%) scaleX(-1);
+    }
 
-#objectList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+    canvas {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: auto;
+    }
 
-#objectList li {
-  margin-bottom: 4px;
-}
+    #sidebar {
+      position: fixed;
+      right: 20px;
+      top: 30px;
+      width: 200px;
+      height: 500px;
+      background: rgba(255, 0, 0, 0.6);
+      border: 2px solid #0f0;
+      padding: 10px;
+      font-size: 14px;
+      z-index: 500;
+    }
 
-#connectESP {
-  position: fixed;
-  top: 20px;
-  right: 230px;
+    #connectESP {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 9999;
+    }
 
-  padding: 10px 16px;
-  font-size: 16px;
+    #connectESP:hover {
+      background-color: #45a049;
+    }
 
-  background-color: #4CAF50; /* green */
-  color: white;
-  border: none;
-  border-radius: 6px;
-
-  cursor: pointer;
-  z-index: 1000;
-}
-
-#connectESP:hover {
-  background-color: #45a049;
-}
-
-#espStatus {
-  position: fixed;
-  top: 60px;
-  right: 230px;
-
-  color: white;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-
-  z-index: 1000;
-}
-
+    #espStatus {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      z-index: 9999;
+    }
   </style>
 </head>
 
 <body>
-<div id="sidebar">
-  <h3>Objects detected</h3>
-  <ul id="objectList"></ul>
-</div>
 
+  <div id="sidebar">
+    <h3>Objects detected</h3>
+    <ul id="objectList"></ul>
+  </div>
 
   <h1>AI Object Detection</h1>
+
   <video id="video" width="960" height="720" autoplay></video>
   <canvas id="overlay" width="960" height="720"></canvas>
+
   <p id="status">Loading model...</p>
 
   <button id="connectESP">Connect ESP32</button>
@@ -93,5 +86,6 @@ video {
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
   <script src="main.js"></script>
+
 </body>
 </html>
