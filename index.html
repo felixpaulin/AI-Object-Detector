@@ -10,11 +10,13 @@
   left: 50%;
   transform: translateX(-50%);
   pointer-events: auto;
+  z-index: 2;
 }
 video {
   position: absolute;
   left: 50%;
   transform: translateX(-50%) scaleX(-1);
+  z-index: 1;
 }
 
 #sidebar {
@@ -53,7 +55,7 @@ video {
   border-radius: 6px;
 
   cursor: pointer;
-  z-index: 1000;
+  z-index: 99999;
 }
 
 #connectESP:hover {
@@ -69,7 +71,7 @@ video {
   font-family: Arial, sans-serif;
   font-size: 14px;
 
-  z-index: 1000;
+  z-index: 99999;
 }
 
   </style>
