@@ -124,11 +124,12 @@ console.log(
       match = {
         id: nextId++,
         class: p.class,
+        customLabel: null,
         label: null,
         bbox: p.bbox,
         center,
         stableFrames: 1,
-       // locked: false,
+        locked: false,
         sent: false
       };
     } else {
@@ -137,15 +138,15 @@ console.log(
       match.stableFrames++;
     }
 
-    //if (match.locked) return;
+    if (match.locked) return;
 
     updated.push(match);
     //checks if it already knows this objects label to label it on the screen.
-    const memory = learnedObjects.find(o => o.class === match.class);
+    /*const memory = learnedObjects.find(o => o.class === match.class);
     if (memory && !match.label) {
       match.label = memory.label;
     }  
-
+*/
     // get actual display size for video
     const displayWidth = video.clientWidth;
     const displayHeight = video.clientHeight;
