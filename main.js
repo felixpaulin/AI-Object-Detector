@@ -99,7 +99,8 @@ console.log(
         bbox: p.bbox,
         center,
         stableFrames: 1,
-        locked: false 
+        locked: false,
+        sent: false
       };
     } else {
       match.center = center;
@@ -129,6 +130,13 @@ console.log(
     const scaleY = drawHeight / displayHeight;
 
     if (match.stableFrames < 5) return;
+
+    if (!match.sent && match.stableFrames >= 5) {
+      const bin = decideBin(match);
+      sendToESP32(`BIN_${bin}`);
+      match.sent = true;
+  }
+
 
 // ---- draw mirrored box + text ----
 ctx.save();
