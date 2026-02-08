@@ -39,6 +39,39 @@ video {
   margin-bottom: 4px;
 }
 
+#connectESP {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+
+  padding: 10px 16px;
+  font-size: 16px;
+
+  background-color: #4CAF50; /* green */
+  color: white;
+  border: none;
+  border-radius: 6px;
+
+  cursor: pointer;
+  z-index: 1000;
+}
+
+#connectESP:hover {
+  background-color: #45a049;
+}
+
+#espStatus {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+
+  z-index: 1000;
+}
+
   </style>
 </head>
 
@@ -47,15 +80,14 @@ video {
   <ul id="objectList"></ul>
 </div>
 
-<button id="connectESP">Connect ESP32</button>
-<span id="espStatus">ESP32: disconnected</span>
-
-
 <body>
   <h1>AI Object Detection</h1>
   <video id="video" width="960" height="720" autoplay></video>
   <canvas id="overlay" width="960" height="720"></canvas>
   <p id="status">Loading model...</p>
+
+  <button id="connectESP">Connect ESP32</button>
+  <span id="espStatus">ESP32: disconnected</span>
 
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
