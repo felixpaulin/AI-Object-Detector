@@ -85,6 +85,11 @@ video {
 <div id="sidebar">
   <h3>Objects detected</h3>
   <ul id="objectList"></ul>
+  <hr />
+  <div style="color:#fff;">
+    <button id="connectESP_sidebar" style="width:100%;padding:8px;margin-top:6px;background:#2b8;">Connect ESP (sidebar)</button>
+    <div id="espStatus_sidebar" style="margin-top:6px;background:rgba(0,0,0,0.25);padding:6px;border-radius:4px;">ESP32: disconnected</div>
+  </div>
 </div>
 
 
@@ -95,6 +100,35 @@ video {
 
   <button id="connectESP">Connect ESP32</button>
   <span id="espStatus">ESP32: disconnected</span>
+
+  <script>
+    // debug: ensure buttons are visible and log existence
+    (function(){
+      const btn = document.getElementById('connectESP');
+      const status = document.getElementById('espStatus');
+      console.log('connectESP element:', btn);
+      console.log('espStatus element:', status);
+      if(btn){
+        btn.style.display = 'block';
+        btn.style.zIndex = 2147483647;
+        btn.style.position = 'fixed';
+        btn.style.top = '10px';
+        btn.style.right = '10px';
+        btn.style.padding = '14px 18px';
+        btn.style.fontSize = '18px';
+      }
+      if(status){
+        status.style.display = 'block';
+        status.style.zIndex = 2147483647;
+        status.style.position = 'fixed';
+        status.style.top = '60px';
+        status.style.right = '10px';
+        status.style.padding = '8px';
+        status.style.background = 'rgba(0,0,0,0.6)';
+        status.style.color = '#0f0';
+      }
+    })();
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
