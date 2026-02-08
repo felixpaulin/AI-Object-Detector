@@ -128,7 +128,7 @@ console.log(
         bbox: p.bbox,
         center,
         stableFrames: 1,
-        locked: false,
+       // locked: false,
         sent: false
       };
     } else {
@@ -137,7 +137,7 @@ console.log(
       match.stableFrames++;
     }
 
-    if (match.locked) return;
+    //if (match.locked) return;
 
     updated.push(match);
     //checks if it already knows this objects label to label it on the screen.
