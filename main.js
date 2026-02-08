@@ -15,6 +15,17 @@ let model;
 //remembers this class = this label
 let learnedObjects = [];
 
+let espSocket = new WebSocket("ws://localhost:8765");
+
+espSocket.onopen = () => {
+  console.log("Connected to ESP32 simulator");
+};
+
+espSocket.onerror = err => {
+  console.error("ESP32 socket error", err);
+};
+
+
 //tracks objects from frame to frame
 function distance(a, b) {
   return Math.hypot(
