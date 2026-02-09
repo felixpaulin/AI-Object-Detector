@@ -4,6 +4,8 @@ The AI object detector runs entirely on the client side using JavaScript and Ten
 
 ---
 
+Note: the esp32_sim.py file is for testing, if you want to use it then launch it using python from the folder in file explorer. The console in the browser will show error if the esp32_sim isnt running but it will not cause errors with the detection or the model itself.
+
 Features
 
 - Live webcam object detection
