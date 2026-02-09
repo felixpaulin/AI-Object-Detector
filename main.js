@@ -41,7 +41,7 @@ async function connectESP32() {
 
   try {
     espPort = await navigator.serial.requestPort();
-    await espPort.open({ baudRate: 115200 });
+    await espPort.open({ baudRate: 9600 });
     espWriter = espPort.writable.getWriter();
 
     console.log("ESP32 connected");
