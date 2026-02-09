@@ -5,7 +5,7 @@
 // type testESP() in the console to test sending a message to the ESP32 and the servo move.
 
 // gets video, status and overlay info from HTML file
-const video = document.getElementById("video");  
+const video = document.getElementById("video");
 const status = document.getElementById("status");
 const canvas = document.getElementById("overlay");
 // for canvas drawing.
@@ -21,35 +21,69 @@ let model;
 //remembers this class = this label
 let learnedObjects = [];
 
+// --- (optional) simulator socket still defined, but NOT used in sendToESP32() right now ---
 let espSocket = new WebSocket("ws://localhost:8765");
+espSocket.onopen = () => console.log("Connected to ESP32 simulator");
+espSocket.onerror = err => console.error("ESP32 socket error", err);
 
-espSocket.onopen = () => {
-  console.log("Connected to ESP32 simulator");
-};
-
-espSocket.onerror = err => {
-  console.error("ESP32 socket error", err);
-};
-
+// ---------- ESP32 SERIAL (robust connect + one-time post-open delay) ----------
 let espPort = null;
 let espWriter = null;
-let askedForESP = false;
+let connectPromise = null;
+let didPostOpenDelay = false;
+
+const ESP_BAUD = 9600;
+const ESP_POST_OPEN_DELAY_MS = 1500;
+
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 async function connectESP32() {
-  if (askedForESP) return;
-  askedForESP = true;
+  // Prevent parallel connects / multiple popups
+  if (connectPromise) return connectPromise;
+
+  connectPromise = (async () => {
+    // requestPort only once on the first click
+    if (!espPort) {
+      espPort = await navigator.serial.requestPort();
+      didPostOpenDelay = false;
+    }
+
+    // open if not open
+    if (!espPort.readable || !espPort.writable) {
+      await espPort.open({ baudRate: ESP_BAUD });
+      didPostOpenDelay = false;
+    }
+
+    // get writer once
+    if (!espWriter) {
+      espWriter = espPort.writable.getWriter();
+    }
+
+    // ESP32 often resets on serial open -> wait once after opening
+    if (!didPostOpenDelay) {
+      await sleep(ESP_POST_OPEN_DELAY_MS);
+      didPostOpenDelay = true;
+    }
+
+    console.log("ESP32 connected/ready");
+  })();
 
   try {
-    espPort = await navigator.serial.requestPort();
-    await espPort.open({ baudRate: 9600 });
-    espWriter = espPort.writable.getWriter();
-
-    console.log("ESP32 connected");
+    await connectPromise;
   } catch (err) {
+    // Reset state so user can retry on next click
+    try { espWriter?.releaseLock(); } catch {}
+    espWriter = null;
+    espPort = null;
+    didPostOpenDelay = false;
     console.error("ESP32 connection failed:", err);
+    throw err;
+  } finally {
+    connectPromise = null;
   }
 }
 
+// Keep the event listener (connect on first click)
 document.addEventListener("click", () => {
   connectESP32();
 }, { once: true });
@@ -57,14 +91,11 @@ document.addEventListener("click", () => {
 
 //tracks objects from frame to frame
 function distance(a, b) {
-  return Math.hypot(
-    a.x - b.x,
-    a.y - b.y
-  );
+  return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
 /* ---------- CAMERA ---------- */
-//asnyc functions can use await to pause and wait for something like video feed or a ai model loading
+//async functions can use await to pause and wait for something like video feed or a ai model loading
 async function startCamera() {
   const stream = await navigator.mediaDevices.getUserMedia({ video: true });
   video.srcObject = stream;
@@ -101,21 +132,20 @@ async function detectLoop() {
   //removes old boxes to prevent stacking
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-console.log(
-  video.videoWidth,
-  video.videoHeight,
-  canvas.width,
-  canvas.height
-);
-
+  console.log(
+    video.videoWidth,
+    video.videoHeight,
+    canvas.width,
+    canvas.height
+  );
 
   let updated = [];
   //filters confidence so leaves things if ai is not atleast 50% sure
   predictions.forEach(p => {
     if (p.score < 0.5) return;
 
-   const [x, y, w, h] = p.bbox;
-   const center = { x: x + w / 2, y: y + h / 2 };
+    const [x, y, w, h] = p.bbox;
+    const center = { x: x + w / 2, y: y + h / 2 };
 
     //matches objects from last frame to current frame
     let match = trackedObjects.find(o => distance(o.center, center) < 50);
@@ -145,9 +175,9 @@ console.log(
     const memory = learnedObjects.find(o => o.class === match.class);
     if (memory && !match.label) {
       match.label = memory.label;
-    }  
+    }
 
-   // get actual display size for video
+    // get actual display size for video
     const displayWidth = video.clientWidth;
     const displayHeight = video.clientHeight;
 
@@ -163,46 +193,43 @@ console.log(
 
     if (!match.sent && match.stableFrames >= 5) {
       const bin = decideBin(match);
+      // Correct template literal
       sendToESP32(`BIN_${bin}`);
-
       match.sent = true;
-  }
+    }
 
+    // ---- draw mirrored box + text ----
+    ctx.save();
 
-// ---- draw mirrored box + text ----
-ctx.save();
+    // flip entire drawing space
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
 
-// flip entire drawing space
-ctx.translate(canvas.width, 0);
-ctx.scale(-1, 1);
+    // draw box (mirrored)
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "lime";
+    ctx.strokeRect(x, y, w, h);
 
-// draw box (mirrored)
-ctx.lineWidth = 3;
-ctx.strokeStyle = "lime";
-ctx.strokeRect(x, y, w, h);
+    // draw text at same mirrored position
+    ctx.save();
 
-// draw text at same mirrored position
-ctx.save();
+    // un-flip text so it reads normally
+    ctx.scale(-1, 1);
 
-// un-flip text so it reads normally
-ctx.scale(-1, 1);
+    ctx.fillStyle = "blue";
+    ctx.font = "16px Arial";
+    ctx.fillText(
+      `${match.id} ${match.label || match.class}`,
+      -(x + w) + 4,
+      y + 14
+    );
 
-ctx.fillStyle = "blue";
-ctx.font = "16px Arial";
-ctx.fillText(
-  `${match.id} ${match.label || match.class}`,
-  -(x + w) + 4,
-  y + 14
-);
-
-ctx.restore(); // restore text flip
-ctx.restore(); // restore canvas
-
-
+    ctx.restore(); // restore text flip
+    ctx.restore(); // restore canvas
   });
 
-    trackedObjects.forEach(oldObj => {
-    const stillHere = updated.find(o => o.id === oldObj.id); 
+  trackedObjects.forEach(oldObj => {
+    const stillHere = updated.find(o => o.id === oldObj.id);
     if (!stillHere) {
       console.log("Object has exited:", oldObj.id);
     }
@@ -217,32 +244,32 @@ ctx.restore(); // restore canvas
 function updateObjectList(objects) {
   //clears the sidebar
   objectList.innerHTML = "";
-// uses a arrow function to write out objects on sidebar, also uses || operator to find out what to use
-objects.forEach(o => {
-  const li = document.createElement("li");
-  li.textContent = o.label || o.class;
-  objectList.appendChild(li);
-});
+  // uses an arrow function to write out objects on sidebar, also uses || operator to find out what to use
+  objects.forEach(o => {
+    const li = document.createElement("li");
+    li.textContent = o.label || o.class;
+    objectList.appendChild(li);
+  });
 }
 
 /* -------- detection prompt --------- */
 // makes the canvas listen for mouse clicks, used e => to verify it comes from a mouse
 canvas.addEventListener("click", e => {
   const rect = canvas.getBoundingClientRect();
-  // converts the coords of the canvas click to see if the click matched the screen 
+  // converts the coords of the canvas click to see if the click matched the screen
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
 
-  // checks if the canvas click matched the postion of a box on the screen
+  // checks if the canvas click matched the position of a box on the screen
   const clicked = trackedObjects.find(o => {
     const [bx, by, bw, bh] = o.bbox;
-    return x >= bx && x <=bx + bw &&
+    return x >= bx && x <= bx + bw &&
            y >= by && y <= by + bh;
   });
 
   //if it was not clicked then return
   if (!clicked) return;
-  // if it was clicked the line above will allow to continue prompting the user for a name or imput which it then saves
+
   const label = prompt("What is this object");
   if (!label) return;
 
@@ -256,7 +283,7 @@ canvas.addEventListener("click", e => {
   });
   saveMemory();
 });
- 
+
 // decides which bin to send the object to based on its label.
 function decideBin(object) {
   if (object.label === "plastic") return 1;
@@ -265,40 +292,35 @@ function decideBin(object) {
 }
 
 async function sendToESP32(message) {
-
-  // --- SIMULATOR MODE (WebSocket) ---
-  // if (typeof espSocket !== "undefined" &&
-  //     espSocket.readyState === WebSocket.OPEN) {
-  //   espSocket.send(message);
-  //   return;
-  // }
-
   // --- USB MODE (ESP32) ---
-  if (!espWriter) return;
+  // With the click-listener approach: if not connected yet, do nothing but log.
+  if (!espWriter) {
+    console.warn("ESP32 not connected yet. Click once on the page to connect.");
+    return;
+  }
 
   const data = new TextEncoder().encode(message + "\n");
   await espWriter.write(data);
 
-
-  console.log(
-   "Sent",
-    message,
-    "at",
-    performance.now().toFixed(2),
-    "ms"
-);
+  console.log("Sent", message, "at", performance.now().toFixed(2), "ms");
 }
 
-window.testESP = () => {
-  sendToESP32("BIN_1");
-}
+// Make testESP reliable: if user hasn't clicked yet, this will just warn.
+// After first click connection, it sends immediately.
+window.testESP = async () => {
+  console.log("espPort:", espPort);
+  console.log("espWriter:", espWriter);
+  console.log("open readable/writable:", !!espPort?.readable, !!espPort?.writable);
+  await sendToESP32("BIN_2");
+};
 
 /* ---------- START ---------- */
-// this starts the whole thing, async () => makes it beign imediatly on file open and then loads the ai memory, then loads the camera and the model, the order matters, then it starts the detecting process 
+// this starts the whole thing, async () => makes it begin immediately on file open and then loads the ai memory,
+// then loads the camera and the model, the order matters, then it starts the detecting process
 (async () => {
   loadMemory();
   await startCamera();
-  
+
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
 
