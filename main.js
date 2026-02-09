@@ -163,7 +163,7 @@ console.log(
 
     if (!match.sent && match.stableFrames >= 5) {
       const bin = decideBin(match);
-      sendToESP32("BIN_${bin}");
+      sendToESP32(`BIN_${bin}`);
 
       match.sent = true;
   }
@@ -267,11 +267,11 @@ function decideBin(object) {
 async function sendToESP32(message) {
 
   // --- SIMULATOR MODE (WebSocket) ---
-  if (typeof espSocket !== "undefined" &&
-      espSocket.readyState === WebSocket.OPEN) {
-    espSocket.send(message);
-    return;
-  }
+  // if (typeof espSocket !== "undefined" &&
+  //     espSocket.readyState === WebSocket.OPEN) {
+  //   espSocket.send(message);
+  //   return;
+  // }
 
   // --- USB MODE (ESP32) ---
   if (!espWriter) return;
