@@ -44,4 +44,4 @@ Due to browser security restrictions, the project must be run using a local HTTP
 
 1: Run the start-server.bat file to launch a browser window in localhost
 2: The batch file will also automatically start the ai detector
-3: Enjoy
+3: Enjoy (Note: this will not detect keyboards as they are ignored becuase this is for a sorting conveyer belt and the model thought the belt was a keyboard. If you wish to change this, then remove line 146 (this line: if (p.class === "keyboard") return; ) 
