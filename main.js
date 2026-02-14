@@ -146,7 +146,7 @@ async function detectLoop() {
     if (
           p.class === "keyboard" ||
           p.class === "wine glass" ||
-          p.class === "gluestick"
+          p.class === "glue stick"
     ) return;
 
     const [x, y, w, h] = p.bbox;
