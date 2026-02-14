@@ -177,7 +177,7 @@ async function detectLoop() {
       match.label = memory.label;
     }
 
-    if (!match.sent && match.stableFrames >= 1) {
+    if (!match.sent && match.stableFrames >= 2) {
       const bin = decideBin(match);
       // Correct template literal
       sendToESP32(`BIN_${bin}`);
