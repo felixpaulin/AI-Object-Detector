@@ -333,4 +333,5 @@ window.testESP = async () => {
 
   await loadModel();
   detectLoop();
+  window.alert("Welcome. Note: DON'T FORGET TO CONNECT THE ESP32 YOU KNOW HOW!!!");
 })();
