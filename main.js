@@ -192,7 +192,7 @@ async function detectLoop() {
 
     if (match.stableFrames < 5) return;
 
-    if (!match.sent && match.stableFrames >= 5) {
+    if (!match.sent && match.stableFrames >= 3) {
       const bin = decideBin(match);
       // Correct template literal
       sendToESP32(`BIN_${bin}`);
