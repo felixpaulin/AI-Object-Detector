@@ -169,6 +169,15 @@ async function detectLoop() {
       match.stableFrames++;
     }
 
+    if (match.stableFrames < 3) return;
+
+    if (!match.sent && match.stableFrames >= 3) {
+      const bin = decideBin(match);
+      // Correct template literal
+      sendToESP32(`BIN_${bin}`);
+      match.sent = true;
+    }
+
     if (match.locked) return;
 
     updated.push(match);
@@ -190,14 +199,6 @@ async function detectLoop() {
     const scaleX = drawWidth / displayWidth;
     const scaleY = drawHeight / displayHeight;
 
-    if (match.stableFrames < 3) return;
-
-    if (!match.sent && match.stableFrames >= 3) {
-      const bin = decideBin(match);
-      // Correct template literal
-      sendToESP32(`BIN_${bin}`);
-      match.sent = true;
-    }
 
     // ---- draw mirrored box + text ----
     ctx.save();
