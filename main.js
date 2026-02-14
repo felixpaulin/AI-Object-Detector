@@ -144,6 +144,7 @@ async function detectLoop() {
   predictions.forEach(p => {
     if (p.score < 0.5) return;
     if (p.class === "keyboard") return;
+    if (p.class === "wine glass") return;
 
     const [x, y, w, h] = p.bbox;
     const center = { x: x + w / 2, y: y + h / 2 };
