@@ -190,7 +190,7 @@ async function detectLoop() {
     const scaleX = drawWidth / displayWidth;
     const scaleY = drawHeight / displayHeight;
 
-    if (match.stableFrames < 5) return;
+    if (match.stableFrames < 3) return;
 
     if (!match.sent && match.stableFrames >= 3) {
       const bin = decideBin(match);
