@@ -187,6 +187,15 @@ async function detectLoop() {
       match.label = memory.label;
     }
 
+    if (match.stableFrames < 3) return;
+
+    if (!match.sent && match.stableFrames >= 3) {
+      const bin = decideBin(match);
+      // Correct template literal
+      sendToESP32(`BIN_${bin}`);
+      match.sent = true;
+    }
+
     // get actual display size for video
     const displayWidth = video.clientWidth;
     const displayHeight = video.clientHeight;
