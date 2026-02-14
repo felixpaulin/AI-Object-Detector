@@ -155,7 +155,6 @@ async function detectLoop() {
       match = {
         id: nextId++,
         class: p.class,
-        customLabel: null,
         label: null,
         bbox: p.bbox,
         center,
@@ -169,16 +168,7 @@ async function detectLoop() {
       match.stableFrames++;
     }
 
-    if (match.stableFrames < 3) return;
-
-    if (!match.sent && match.stableFrames >= 3) {
-      const bin = decideBin(match);
-      // Correct template literal
-      sendToESP32(`BIN_${bin}`);
-      match.sent = true;
-    }
-
-    if (match.locked) return;
+    //if (match.locked) return;
 
     updated.push(match);
     //checks if it already knows this objects label to label it on the screen.
@@ -187,14 +177,14 @@ async function detectLoop() {
       match.label = memory.label;
     }
 
-    if (match.stableFrames < 3) return;
-
     if (!match.sent && match.stableFrames >= 3) {
       const bin = decideBin(match);
       // Correct template literal
       sendToESP32(`BIN_${bin}`);
       match.sent = true;
     }
+
+   // if (match.stableFrames < 3) return;
 
     // get actual display size for video
     const displayWidth = video.clientWidth;
