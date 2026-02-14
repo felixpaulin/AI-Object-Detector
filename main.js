@@ -12,6 +12,8 @@ const canvas = document.getElementById("overlay");
 const ctx = canvas.getContext("2d");
 const objectList = document.getElementById("objectList");
 
+window.alert("Welcome. Note: DON'T FORGET TO CONNECT THE ESP32 YOU KOW HOW!!!");
+
 //detects objects in current frame
 let trackedObjects = [];
 //gives each object detected a unique ID
