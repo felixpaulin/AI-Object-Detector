@@ -144,7 +144,7 @@ async function detectLoop() {
   let updated = [];
   //filters confidence so leaves things if ai is not atleast 50% sure
   predictions.forEach(p => {
-    if (p.score < 0.5) return;
+    if (p.score < 0.4) return;
     if (
           p.class === "keyboard" ||
           p.class === "wine glass" ||
