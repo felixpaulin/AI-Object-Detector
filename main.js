@@ -12,8 +12,6 @@ const canvas = document.getElementById("overlay");
 const ctx = canvas.getContext("2d");
 const objectList = document.getElementById("objectList");
 
-window.alert("Welcome. Note: DON'T FORGET TO CONNECT THE ESP32 YOU KOW HOW!!!");
-
 //detects objects in current frame
 let trackedObjects = [];
 //gives each object detected a unique ID
@@ -22,6 +20,10 @@ let nextId = 1;
 let model;
 //remembers this class = this label
 let learnedObjects = [];
+
+let detectionMode = "ALL";
+
+const ALLOWED_CLASSES = ["person", "paper", "plastic", "can"];
 
 // --- (optional) simulator socket still defined, but NOT used in sendToESP32() right now ---
 let espSocket = new WebSocket("ws://localhost:8765");
@@ -38,6 +40,13 @@ const ESP_BAUD = 9600;
 const ESP_POST_OPEN_DELAY_MS = 1500;
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "m") {
+    detectionMode = detectionMode === "ALL" ? "FILTERED" : "ALL";
+    console.log("Mode:", detectionMode);
+  }
+});
 
 async function connectESP32() {
   // Prevent parallel connects / multiple popups
@@ -145,11 +154,10 @@ async function detectLoop() {
   //filters confidence so leaves things if ai is not atleast 50% sure
   predictions.forEach(p => {
     if (p.score < 0.4) return;
-    if (
-          p.class === "keyboard" ||
-          p.class === "wine glass" ||
-          p.class === "glue stick"
-    ) return;
+    if (detectionMode === "FILTERED" && 
+    !ALLOWED_CLASSES.includes(p.class)) {
+  return;
+}
 
     const [x, y, w, h] = p.bbox;
     const center = { x: x + w / 2, y: y + h / 2 };
@@ -333,5 +341,5 @@ window.testESP = async () => {
 
   await loadModel();
   detectLoop();
-  window.alert("Welcome. Note: DON'T FORGET TO CONNECT THE ESP32 YOU KNOW HOW!!!");
+  window.alert("Welcome, Press m to switch between filtered mode where only certain objects will be detected and all mode where any object will by detected if possible. Note: DON'T FORGET TO CONNECT THE ESP32 YOU KNOW HOW!!!");
 })();
