@@ -45,6 +45,7 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "m") {
     detectionMode = detectionMode === "ALL" ? "FILTERED" : "ALL";
     console.log("Mode:", detectionMode);
+    window.alert(`Switched to ${detectionMode} mode.`);
   }
 });
 
