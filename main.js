@@ -324,11 +324,11 @@ async function sendToESP32(message) {
 
 // Make testESP reliable: if user hasn't clicked yet, this will just warn.
 // After first click connection, it sends immediately.
-window.testESP = async () => {
+window.testESP = async (nbBin) => {
   console.log("espPort:", espPort);
   console.log("espWriter:", espWriter);
   console.log("open readable/writable:", !!espPort?.readable, !!espPort?.writable);
-  await sendToESP32("BIN_2");
+  await sendToESP32(`BIN_${nbBin}`);
 };
 
 /* ---------- START ---------- */
