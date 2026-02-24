@@ -1,8 +1,10 @@
-// ESP32 READY:
-// - Auto-connect on first click
-// - sendToESP32() is the ONLY hardware interface
-// - Message format: BIN_1 / BIN_2 / BIN_3
-// type testESP() in the console to test sending a message to the ESP32 and the servo move.
+/* ESP32 READY:
+ - Auto-connect on first click
+ - sendToESP32() is the ONLY hardware interface
+ - Message format: BIN_1 / BIN_2 / BIN_3
+ type testESP() in the console to test sending a message to the ESP32 and the servo move.
+Type resetLearning() in the console to reset all labels, so you can teach it again. */
+
 
 // gets video, status and overlay info from HTML file
 const video = document.getElementById("video");
@@ -331,6 +333,11 @@ window.testESP = async (nbBin) => {
   await sendToESP32(`BIN_${nbBin}`);
 };
 
+window.resetLearning = () => {
+  localStorage.removeItem("learnedObjects");
+  console.log("Learning reset.");
+};
+
 /* ---------- START ---------- */
 // this starts the whole thing, async () => makes it begin immediately on file open and then loads the ai memory,
 // then loads the camera and the model, the order matters, then it starts the detecting process
@@ -343,5 +350,5 @@ window.testESP = async (nbBin) => {
 
   await loadModel();
   detectLoop();
-  window.alert("Welcome, Press m to switch between filtered mode where only certain objects will be detected and all mode where any object will by detected if possible. Note: DON'T FORGET TO CONNECT THE ESP32 YOU KNOW HOW!!!");
+  window.alert("Welcome, Press m to switch between filtered mode where only certain objects will be detected and all mode where any object will by detected if possible., type testESP(Here put 1, 2 or 3) to send a bin test to the ESP32. Type resetLearning() to reset all labels. Note: DON'T FORGET TO CONNECT THE ESP32 YOU KNOW HOW!!!");
 })();
