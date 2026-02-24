@@ -122,7 +122,7 @@ async function startCamera() {
 
 /* ---------- LOAD AI MODEL ---------- */
 async function loadModel() {
-  window.model = await cocoSsd.load();
+model = await cocoSsd.load();
   status.innerText = "Model loaded. Detecting...";
 }
 
