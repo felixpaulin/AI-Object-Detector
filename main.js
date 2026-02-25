@@ -307,7 +307,7 @@ canvas.addEventListener("click", e => {
 function decideBin(object) {
   if (object.label === "plastic") return 1;
   if (object.label === "paper") return 2;
-  return 3;
+  if (object.label === "metal") return 3;
 }
 
 async function sendToESP32(message) {
