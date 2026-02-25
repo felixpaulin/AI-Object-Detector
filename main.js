@@ -338,9 +338,9 @@ window.resetLearning = () => {
   console.log("Learning reset.");
 };
 
-/* ---------- START ---------- */
-// this starts the whole thing, async () => makes it begin immediately on file open and then loads the ai memory,
-// then loads the camera and the model, the order matters, then it starts the detecting process
+// ---------- START ----------
+/* this starts the whole thing, async () => makes it begin immediately on file open and then loads the ai memory,
+then loads the camera and the model, the order matters, then it starts the detecting process */
 (async () => {
   loadMemory();
   await startCamera();
