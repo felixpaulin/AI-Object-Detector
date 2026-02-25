@@ -344,10 +344,8 @@ window.resetLearning = () => {
 (async () => {
   loadMemory();
   await startCamera();
-
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
-
   await loadModel();
   detectLoop();
   window.alert("Welcome, Press m to switch between filtered mode where only certain objects will be detected and all mode where any object will by detected if possible., type testESP(Here put 1, 2 or 3) to send a bin test to the ESP32. Type resetLearning() to reset all labels. Note: DON'T FORGET TO CONNECT THE ESP32 YOU KNOW HOW!!!");
