@@ -154,7 +154,7 @@ async function detectLoop() {
   );
 
   let updated = [];
-  //filters confidence so leaves things if ai is not atleast 50% sure
+  //filters confidence so leaves things if ai is not atleast 40% sure
   predictions.forEach(p => {
     console.log(p.class, p.score);
     if (p.score < 0.4) return;
