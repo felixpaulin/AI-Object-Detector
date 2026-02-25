@@ -25,7 +25,7 @@ let learnedObjects = [];
 
 let detectionMode = "ALL";
 
-const ALLOWED_CLASSES = ["person", "paper", "plastic", "can"];
+const ALLOWED_LABELS = ["person", "paper", "plastic", "general waste"];
 
 // --- (optional) simulator socket still defined, but NOT used in sendToESP32() right now ---
 let espSocket = new WebSocket("ws://localhost:8765");
@@ -159,7 +159,7 @@ async function detectLoop() {
     console.log(p.class, p.score);
     if (p.score < 0.4) return;
     if (detectionMode === "FILTERED" && 
-    !ALLOWED_CLASSES.includes(p.class)) {
+    !ALLOWED_LABELS.includes(match.label)) {
   return;
 }
 
@@ -202,7 +202,7 @@ async function detectLoop() {
       match.sent = true;
     }
 
-   // if (match.stableFrames < 3) return;
+   // if (match.stableFrames < 2) return;
 
     // get actual display size for video
     const displayWidth = video.clientWidth;
