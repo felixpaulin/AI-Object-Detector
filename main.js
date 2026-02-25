@@ -25,7 +25,7 @@ let learnedObjects = [];
 
 let detectionMode = "ALL";
 
-const ALLOWED_LABELS = ["person", "paper", "plastic", "general waste"];
+const ALLOWED_CLASSES = ["person", "bottle", "carrot", "frisbeee", "bowl", "cup"];
 
 // --- (optional) simulator socket still defined, but NOT used in sendToESP32() right now ---
 let espSocket = new WebSocket("ws://localhost:8765");
@@ -159,7 +159,7 @@ async function detectLoop() {
     console.log(p.class, p.score);
     if (p.score < 0.4) return;
     if (detectionMode === "FILTERED" && 
-    !ALLOWED_LABELS.includes(match.label)) {
+    !ALLOWED_CLASSES.includes(p.class)) {
   return;
 }
 
