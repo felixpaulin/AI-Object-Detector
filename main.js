@@ -73,6 +73,7 @@ function sendToESP32(message) {
 
   const data = new TextEncoder().encode(message + "\n");
   espWriter.write(data);
+  console.log("Sent to ESP32:", message);
 }
 
 // ---------- CAMERA ----------
