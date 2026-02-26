@@ -1,8 +1,6 @@
 /* 
-  TEACHABLE MACHINE VERSION
   - Uses TensorFlow.js + Teachable Machine
-  - No bounding boxes
-  - No tracking
+  - No bounding box. Just classification of the whole frame.
   - Sends BIN_1 / BIN_2 / BIN_3 via Web Serial
   - Threshold = 0.7
   - Sends continuously until empty_belt is detected
