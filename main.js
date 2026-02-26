@@ -128,12 +128,14 @@ async function detectLoop() {
 
   if (probability >= CONFIDENCE_THRESHOLD) {
     if (label !== "empty_belt") {
+    console.log(label, probability);
 
       const bin = decideBin(label);
 
       if (bin !== null) {
-        sendToESP32(`BIN_${bin}`);
-        console.log("Sent:", `BIN_${bin}`);
+        const message = `BIN_${bin}`;
+        sendToESP32(message);
+        console.log("Sent", message, "at", performance.now().toFixed(2), "ms");
       }
 
       currentLabel = label;
