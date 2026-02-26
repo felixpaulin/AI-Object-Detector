@@ -1,1 +1,1 @@
-{"tfjsVersion":"1.7.4","tmVersion":"2.4.12","packageVersion":"0.8.4-alpha2","packageName":"@teachablemachine/image","timeStamp":"2026-02-26T06:51:27.695Z","userMetadata":{},"modelName":"tm-my-image-model","labels":["paper","plastic","metal","empty_belt"],"imageSize":224}
+{"tfjsVersion":"1.7.4","tmVersion":"2.4.12","packageVersion":"0.8.4-alpha2","packageName":"@teachablemachine/image","timeStamp":"2026-02-26T15:23:47.817Z","userMetadata":{},"modelName":"tm-my-image-model","labels":["paper","plastic","metal","empty_belt"],"imageSize":224}
