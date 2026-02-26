@@ -149,12 +149,19 @@ async function detectLoop() {
   requestAnimationFrame(detectLoop);
 }
 
+window.testESP = async (nbBin) => {
+  console.log("espPort:", espPort);
+  console.log("espWriter:", espWriter);
+  console.log("open readable/writable:", !!espPort?.readable, !!espPort?.writable);
+  sendToESP32(`BIN_${nbBin}`);
+};
+
 // ---------- START ----------
 async function init() {
   await startCamera();
   await loadModel();
   detectLoop();
-  window.alert("Welcome, Press m to switch between filtered mode where only certain objects will be detected and all mode where any object will by detected if possible., type testESP(Here put 1, 2 or 3) to send a bin test to the ESP32. Type resetLearning() to reset all labels. Note: DON'T FORGET TO CONNECT THE ESP32 YOU KNOW HOW!!!");
+  window.alert("Welcome, type testESP(Here put 1, 2 or 3) in the console to send a bin test to the ESP32. Note: DON'T FORGET TO CONNECT THE ESP32 YOU KNOW HOW!!!");
 }
 
 init();  
