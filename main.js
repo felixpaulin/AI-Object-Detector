@@ -144,7 +144,7 @@ async function detectLoop() {
     }
   }
 
-  requestAnimationFrame(detectLoop);
+  requestAnimationFrame(detectLoop); // Run the loop again
 }
 
 window.testESP = async (nbBin) => {
