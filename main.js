@@ -16,7 +16,7 @@ let model;
 const MODEL_URL = "model/model.json";
 const METADATA_URL = "model/metadata.json";
 
-// ---------- CONFIG ----------
+// ---------- THRESHOLD ----------
 const CONFIDENCE_THRESHOLD = 0.7;
 
 // ---------- STATE ----------
