@@ -29,81 +29,94 @@ let connectPromise = null;
 
 const ESP_BAUD = 115200;
 
-async function connectESP32() {
-    if (connectPromise) return connectPromise;
-
-    // Force reset variables if they are in a broken state
+async function closeESP32() {
+  try {
     if (espWriter) {
-      try { espWriter.releaseLock(); } catch(e) {}
+      await espWriter.close();
       espWriter = null;
     }
-    
-    connectPromise = (async () => {
-        try {
-            if (!espPort) {
-                espPort = await navigator.serial.requestPort();
-            }
+  } catch (err) {
+    console.warn("Error closing writer:", err);
+  }
 
-            // Only open if the port is currently closed
-            if (!espPort.readable || !espPort.writable) {
-                await espPort.open({ 
-                    baudRate: ESP_BAUD,
-                    flowControl: "none" // FIX 1: Prevents the "CTS Holding" hardware block
-                });
-                
-                // FIX 2: Manually "Kick" the DTR/RTS signals. 
-                // This resets the ESP32 chip's write-buffer state.
-                await espPort.setSignals({ dataTerminalReady: true, requestToSend: true });
-            }
-
-            // Check if stream is locked by a zombie writer from a previous crash
-            if (espPort.writable && espPort.writable.locked && !espWriter) {
-                console.warn("Stream is locked. Trying to clear...");
-                await espPort.close(); 
-                await espPort.open({ baudRate: ESP_BAUD, flowControl: "none" });
-                await espPort.setSignals({ dataTerminalReady: true, requestToSend: true });
-            }
-
-            // Only get a new writer if we don't already have one
-            if (!espWriter) {
-                espWriter = espPort.writable.getWriter();
-            }
-        
-            console.log("ESP32 connected and ready to write.");
-            console.log("Locked: ", espPort.writable.locked);
-        } catch (err) {
-            console.error("Connection failed:", err);
-            // Reset variables so you can try again on next click
-            espPort = null;
-            espWriter = null;
-        }
-    })();
-
-    try {
-        await connectPromise;
-    } catch (err) {
-        console.error("ESP connection failed:", err);
-        espWriter = null;
-        espPort = null;
-        throw err;
-    } finally {
-        connectPromise = null;
+  try {
+    if (espPort) {
+      await espPort.close();
+      espPort = null;
     }
+  } catch (err) {
+    console.warn("Error closing port:", err);
+  }
+}
+
+async function connectESP32() {
+  if (connectPromise) return connectPromise;
+
+  connectPromise = (async () => {
+    try {
+      if (!espPort) {
+        espPort = await navigator.serial.requestPort();
+      }
+
+      if (!espPort.readable || !espPort.writable) {
+        await espPort.open({
+          baudRate: ESP_BAUD,
+          flowControl: "none",
+        });
+      }
+
+      if (espPort.writable.locked && !espWriter) {
+        console.warn("Writable stream locked without writer. Resetting port...");
+        await closeESP32();
+        espPort = await navigator.serial.requestPort();
+        await espPort.open({ baudRate: ESP_BAUD, flowControl: "none" });
+      }
+
+      if (!espWriter) {
+        espWriter = espPort.writable.getWriter();
+      }
+
+      console.log("ESP32 connected and ready to write.");
+      console.log("Port writable locked?", espPort.writable.locked);
+    } catch (err) {
+      console.error("Connection failed:", err);
+      await closeESP32();
+      throw err;
+    }
+  })();
+
+  try {
+    await connectPromise;
+  } finally {
+    connectPromise = null;
+  }
+}
+
+async function sendToESP32(message) {
+  try {
+    if (!espPort || !espPort.writable) {
+      await connectESP32();
+    }
+
+    if (!espWriter || !espPort.writable.locked) {
+      espWriter = espPort.writable.getWriter();
+    }
+
+    const data = new TextEncoder().encode(message + "\n");
+    await espWriter.write(data);
+    console.log("Sent to ESP32:", message);
+  } catch (err) {
+    console.error("Send failed:", err);
+    await closeESP32();
+  }
 }
 
 // Connect on first click
 document.addEventListener("click", () => {
-  connectESP32();
+  connectESP32().catch(err => {
+    console.error("Initial serial connect failed:", err);
+  });
 }, { once: true });
-
-// ---------- SEND FUNCTION ----------
-function sendToESP32(message) {
-  if (!espWriter) return;
-
-  const data = new TextEncoder().encode(message + "\n");
-  espWriter.write(data);
-  console.log("Sent to ESP32:", message);
-}
 
 // ---------- CAMERA ----------
 async function startCamera() {
@@ -157,25 +170,23 @@ async function detectLoop() {
 
   if (probability >= CONFIDENCE_THRESHOLD) {
     if (label !== "empty_belt") {
-    console.log(label, probability);
-
+      console.log(label, probability);
       const bin = decideBin(label);
-
       if (bin !== null) {
         const message = `BIN_${bin}`;
-        sendToESP32(message);
-        console.log("Sent", message, "at", performance.now().toFixed(2), "ms");
+        // Only send once when high-confidence label changes
+        if (currentLabel !== label) {
+          await sendToESP32(message);
+          console.log("Sent", message, "at", performance.now().toFixed(2), "ms");
+        }
       }
-
       currentLabel = label;
-
     } else {
-      // reset when belt empty
       currentLabel = "empty_belt";
     }
   }
 
-  requestAnimationFrame(detectLoop); // Run the loop again
+  requestAnimationFrame(detectLoop);
 }
 
 window.testESP = async (nbBin) => {
