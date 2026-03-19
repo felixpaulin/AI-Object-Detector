@@ -32,6 +32,11 @@ const ESP_BAUD = 115200;
 async function connectESP32() {
     if (connectPromise) return connectPromise;
 
+    // Force reset variables if they are in a broken state
+    if (espWriter) {
+      try { espWriter.releaseLock(); } catch(e) {}
+      espWriter = null;
+}
     connectPromise = (async () => {
         try {
             if (!espPort) {
@@ -50,18 +55,16 @@ async function connectESP32() {
                 await espPort.setSignals({ dataTerminalReady: true, requestToSend: true });
             }
 
-            // Logic check for the writer (Your original debug steps)
-            if (espWriter) {
-                console.log("Using existing writer.");
-            } else if (espPort.writable && !espPort.writable.locked) {
-                espWriter = espPort.writable.getWriter();
-            } else {
-                // stop here and return if it's locked
-                console.log("Write check failed. Locked status:", espPort.writable.locked);
-                window.alert("Port is used, check for other programs such as VS code");
-                return; 
-            }
-
+        if (espPort.writable && espPort.writable.locked) {
+          console.warn("Stream is locked. Trying to clear...");
+          // If it's locked and we don't have the active espWriter, 
+          // the only way to fix it in a browser is to close and re-open the port.
+          await espPort.close(); 
+          await espPort.open({ baudRate: ESP_BAUD, flowControl: "none" });
+          await espPort.setSignals({ dataTerminalReady: true, requestToSend: true });
+}
+        espWriter = espPort.writable.getWriter();
+        
             console.log("ESP32 connected and ready to write.");
             console.log("Locked: ", espPort.writable.locked);
         } catch (err) {
