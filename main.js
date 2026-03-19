@@ -98,7 +98,7 @@ async function sendToESP32(message) {
       await connectESP32();
     }
 
-    if (!espWriter || !espPort.writable.locked) {
+    if (!espWriter) {
       espWriter = espPort.writable.getWriter();
     }
 
