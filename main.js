@@ -58,7 +58,7 @@ async function connectESP32() {
         espPort = await navigator.serial.requestPort();
       }
 
-      if (!espPort.readable || !espPort.writable) {
+      if (!espPort.readable || !espPort.writable || !espPort.opened) {
         await espPort.open({
           baudRate: ESP_BAUD,
           flowControl: "none",
@@ -77,7 +77,9 @@ async function connectESP32() {
       }
 
       console.log("ESP32 connected and ready to write.");
+      console.log("Port connected?", espPort.connected);
       console.log("Port writable locked?", espPort.writable.locked);
+      console.log("Writer locked?", espWriter?.locked);
     } catch (err) {
       console.error("Connection failed:", err);
       await closeESP32();
@@ -94,17 +96,20 @@ async function connectESP32() {
 
 async function sendToESP32(message) {
   try {
-    if (!espPort || !espPort.writable) {
+    if (!espPort || !espPort.writable || !espPort.connected) {
       await connectESP32();
     }
 
-    if (!espWriter) {
+    if (!espWriter || !espWriter.locked) {
+      if (espWriter) {
+        try { espWriter.releaseLock(); } catch (e) {}
+      }
       espWriter = espPort.writable.getWriter();
     }
 
-    const data = new TextEncoder().encode(message + "\n");
+    const data = new TextEncoder().encode(message + "\r\n");
     await espWriter.write(data);
-    console.log("Sent to ESP32:", message);
+    console.log(`Sent to ESP32: ${message} (bytes: ${data.length})`);
   } catch (err) {
     console.error("Send failed:", err);
     await closeESP32();
@@ -193,7 +198,7 @@ window.testESP = async (nbBin) => {
   console.log("espPort:", espPort);
   console.log("espWriter:", espWriter);
   console.log("open readable/writable:", !!espPort?.readable, !!espPort?.writable);
-  sendToESP32(`BIN_${nbBin}`);
+  await sendToESP32(`BIN_${nbBin}`);
 };
 
 // ---------- START ----------
