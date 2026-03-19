@@ -32,7 +32,7 @@ const ESP_BAUD = 9600;
 async function connectESP32() {
   if (connectPromise) return connectPromise;
 
-  connectPromise = (async () => {
+connectPromise = (async () => {
     try {
         if (!espPort) {
             espPort = await navigator.serial.requestPort();
@@ -46,16 +46,19 @@ async function connectESP32() {
         // Logic check for the writer
         if (espWriter) {
             console.log("Using existing writer.");
-        } else if (espPort.writable.locked) {
+        } else if (espPort.writable && !espPort.writable.locked) {
+            espWriter = espPort.writable.getWriter();
+        } else {
+            // stop here and return if it's locked
             window.alert("Port is used, check for other programs such as VS code");
             return; 
-        } 
+        }
+
         console.log("ESP32 connected and ready to write.");
     } catch (err) {
         console.error("Connection failed:", err);
     }
 })();
-
   try {
     await connectPromise;
   } catch (err) {
