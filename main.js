@@ -55,6 +55,7 @@ connectPromise = (async () => {
         }
 
         console.log("ESP32 connected and ready to write.");
+        console.log("Locked: ", espPort.writable.locked);
     } catch (err) {
         console.error("Connection failed:", err);
     }
