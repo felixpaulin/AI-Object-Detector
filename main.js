@@ -27,50 +27,63 @@ let espPort = null;
 let espWriter = null;
 let connectPromise = null;
 
-const ESP_BAUD = 9600;
+const ESP_BAUD = 115200;
 
 async function connectESP32() {
-  if (connectPromise) return connectPromise;
+    if (connectPromise) return connectPromise;
 
-connectPromise = (async () => {
+    connectPromise = (async () => {
+        try {
+            if (!espPort) {
+                espPort = await navigator.serial.requestPort();
+            }
+
+            // Only open if the port is currently closed
+            if (!espPort.readable || !espPort.writable) {
+                await espPort.open({ 
+                    baudRate: ESP_BAUD,
+                    flowControl: "none" // FIX 1: Prevents the "CTS Holding" hardware block
+                });
+                
+                // FIX 2: Manually "Kick" the DTR/RTS signals. 
+                // This resets the ESP32 chip's write-buffer state.
+                await espPort.setSignals({ dataTerminalReady: true, requestToSend: true });
+            }
+
+            // Logic check for the writer (Your original debug steps)
+            if (espWriter) {
+                console.log("Using existing writer.");
+            } else if (espPort.writable && !espPort.writable.locked) {
+                espWriter = espPort.writable.getWriter();
+            } else {
+                // stop here and return if it's locked
+                console.log("Write check failed. Locked status:", espPort.writable.locked);
+                window.alert("Port is used, check for other programs such as VS code");
+                return; 
+            }
+
+            console.log("ESP32 connected and ready to write.");
+            console.log("Locked: ", espPort.writable.locked);
+        } catch (err) {
+            console.error("Connection failed:", err);
+            // Reset variables so you can try again on next click
+            espPort = null;
+            espWriter = null;
+        }
+    })();
+
     try {
-        if (!espPort) {
-            espPort = await navigator.serial.requestPort();
-        }
-
-        // Only open if the port is currently closed
-        if (!espPort.readable || !espPort.writable) {
-            await espPort.open({ baudRate: ESP_BAUD });
-        }
-
-        // Logic check for the writer
-        if (espWriter) {
-            console.log("Using existing writer.");
-        } else if (espPort.writable && !espPort.writable.locked) {
-            espWriter = espPort.writable.getWriter();
-        } else {
-            // stop here and return if it's locked
-            window.alert("Port is used, check for other programs such as VS code");
-            return; 
-        }
-
-        console.log("ESP32 connected and ready to write.");
-        console.log("Locked: ", espPort.writable.locked);
+        await connectPromise;
     } catch (err) {
-        console.error("Connection failed:", err);
+        console.error("ESP connection failed:", err);
+        espWriter = null;
+        espPort = null;
+        throw err;
+    } finally {
+        connectPromise = null;
     }
-})();
-  try {
-    await connectPromise;
-  } catch (err) {
-    console.error("ESP connection failed:", err);
-    espWriter = null;
-    espPort = null;
-    throw err;
-  } finally {
-    connectPromise = null;
-  }
 }
+
 
 // Connect on first click
 document.addEventListener("click", () => {
