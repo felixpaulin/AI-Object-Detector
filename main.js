@@ -36,7 +36,8 @@ async function connectESP32() {
     if (espWriter) {
       try { espWriter.releaseLock(); } catch(e) {}
       espWriter = null;
-}
+    }
+    
     connectPromise = (async () => {
         try {
             if (!espPort) {
@@ -55,15 +56,18 @@ async function connectESP32() {
                 await espPort.setSignals({ dataTerminalReady: true, requestToSend: true });
             }
 
-        if (espPort.writable && espPort.writable.locked) {
-          console.warn("Stream is locked. Trying to clear...");
-          // If it's locked and we don't have the active espWriter, 
-          // the only way to fix it in a browser is to close and re-open the port.
-          await espPort.close(); 
-          await espPort.open({ baudRate: ESP_BAUD, flowControl: "none" });
-          await espPort.setSignals({ dataTerminalReady: true, requestToSend: true });
-}
-        espWriter = espPort.writable.getWriter();
+            // Check if stream is locked by a zombie writer from a previous crash
+            if (espPort.writable && espPort.writable.locked && !espWriter) {
+                console.warn("Stream is locked. Trying to clear...");
+                await espPort.close(); 
+                await espPort.open({ baudRate: ESP_BAUD, flowControl: "none" });
+                await espPort.setSignals({ dataTerminalReady: true, requestToSend: true });
+            }
+
+            // Only get a new writer if we don't already have one
+            if (!espWriter) {
+                espWriter = espPort.writable.getWriter();
+            }
         
             console.log("ESP32 connected and ready to write.");
             console.log("Locked: ", espPort.writable.locked);
@@ -86,7 +90,6 @@ async function connectESP32() {
         connectPromise = null;
     }
 }
-
 
 // Connect on first click
 document.addEventListener("click", () => {
