@@ -24,21 +24,11 @@ let currentLabel = "empty_belt";
 
 // ---------- ESP32 SERIAL ----------
 let espPort = null;
-let espWriter = null;
 let connectPromise = null;
 
 const ESP_BAUD = 115200;
 
 async function closeESP32() {
-  try {
-    if (espWriter) {
-      await espWriter.close();
-      espWriter = null;
-    }
-  } catch (err) {
-    console.warn("Error closing writer:", err);
-  }
-
   try {
     if (espPort) {
       await espPort.close();
@@ -65,21 +55,13 @@ async function connectESP32() {
         });
       }
 
-      if (espPort.writable.locked && !espWriter) {
-        console.warn("Writable stream locked without writer. Resetting port...");
-        await closeESP32();
-        espPort = await navigator.serial.requestPort();
-        await espPort.open({ baudRate: ESP_BAUD, flowControl: "none" });
+      if (espPort.writable.locked) {
+        console.log("Port writable is locked (expected for active writer)");
       }
 
-      if (!espWriter) {
-        espWriter = espPort.writable.getWriter();
-      }
-
-      console.log("ESP32 connected and ready to write.");
+      console.log("ESP32 connected and ready.");
       console.log("Port connected?", espPort.connected);
       console.log("Port writable locked?", espPort.writable.locked);
-      console.log("Writer locked?", espWriter?.locked);
     } catch (err) {
       console.error("Connection failed:", err);
       await closeESP32();
@@ -100,15 +82,11 @@ async function sendToESP32(message) {
       await connectESP32();
     }
 
-    if (!espWriter || !espWriter.locked) {
-      if (espWriter) {
-        try { espWriter.releaseLock(); } catch (e) {}
-      }
-      espWriter = espPort.writable.getWriter();
-    }
-
+    const writer = espPort.writable.getWriter();
     const data = new TextEncoder().encode(message + "\r\n");
-    await espWriter.write(data);
+    await writer.write(data);
+    writer.releaseLock();
+
     console.log(`Sent to ESP32: ${message} (bytes: ${data.length})`);
     return true;
   } catch (err) {
@@ -198,7 +176,6 @@ async function detectLoop() {
 
 window.testESP = async (nbBin) => {
   console.log("espPort:", espPort);
-  console.log("espWriter:", espWriter);
   console.log("open readable/writable:", !!espPort?.readable, !!espPort?.writable);
   const status = await sendToESP32(`BIN_${nbBin}`);
   console.log("testESP result:", status);
