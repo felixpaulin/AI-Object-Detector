@@ -78,20 +78,25 @@ async function connectESP32() {
 
 async function sendToESP32(message) {
   try {
-    if (!espPort || !espPort.writable || !espPort.connected) {
+    //Only connect if don't have a port or it's closed
+    if (!espPort || !espPort.connected) {
       await connectESP32();
     }
 
+    //Wait for the port to actually be writable before getting the writer
     const writer = espPort.writable.getWriter();
+    
+    //Encode with \r\n to match your Serial.readStringUntil('\n')
     const data = new TextEncoder().encode(message + "\r\n");
     await writer.write(data);
+    
+    //Release the lock so the NEXT call to sendToESP32 can get a new writer
     writer.releaseLock();
 
-    console.log(`Sent to ESP32: ${message} (bytes: ${data.length})`);
+    console.log(`Sent to ESP32: ${message}`);
     return true;
   } catch (err) {
     console.error("Send failed:", err);
-    await closeESP32();
     return false;
   }
 }
