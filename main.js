@@ -58,7 +58,7 @@ async function connectESP32() {
         espPort = await navigator.serial.requestPort();
       }
 
-      if (!espPort.readable || !espPort.writable || !espPort.opened) {
+      if (!espPort.readable || !espPort.writable) {
         await espPort.open({
           baudRate: ESP_BAUD,
           flowControl: "none",
@@ -110,9 +110,11 @@ async function sendToESP32(message) {
     const data = new TextEncoder().encode(message + "\r\n");
     await espWriter.write(data);
     console.log(`Sent to ESP32: ${message} (bytes: ${data.length})`);
+    return true;
   } catch (err) {
     console.error("Send failed:", err);
     await closeESP32();
+    return false;
   }
 }
 
@@ -198,7 +200,9 @@ window.testESP = async (nbBin) => {
   console.log("espPort:", espPort);
   console.log("espWriter:", espWriter);
   console.log("open readable/writable:", !!espPort?.readable, !!espPort?.writable);
-  await sendToESP32(`BIN_${nbBin}`);
+  const status = await sendToESP32(`BIN_${nbBin}`);
+  console.log("testESP result:", status);
+  return status;
 };
 
 // ---------- START ----------
