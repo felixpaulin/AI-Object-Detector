@@ -136,12 +136,19 @@ function decideBin(label) {
 }
 
 // ---------- SIDEBAR UPDATE ----------
-function updateSidebar(label, probability) {
+function updateSidebar(label, probability,predictions) {
   objectList.innerHTML = "";
 
-  const li = document.createElement("li");
-  li.textContent = `${label} (${(probability * 100).toFixed(1)}%)`;
-  objectList.appendChild(li);
+  predictions.map(pred => {
+    const li = document.createElement("li");
+    li.textContent = `${pred.className} (${(pred.probability * 100).toFixed(1)}%)`;
+    objectList.appendChild(li);
+  } 
+);
+
+//  const li = document.createElement("li");
+//  li.textContent = `${label} (${(probability * 100).toFixed(1)}%)`;
+//  objectList.appendChild(li);
 }
 
 // ---------- DETECTION LOOP ----------
@@ -156,7 +163,8 @@ async function detectLoop() {
   const label = highest.className;
   const probability = highest.probability;
 
-  updateSidebar(label, probability);
+
+  updateSidebar(label, probability, predictions);
 
   if (probability >= CONFIDENCE_THRESHOLD) {
     if (label !== "empty_belt") {
