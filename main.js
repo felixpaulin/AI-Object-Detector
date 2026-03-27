@@ -159,13 +159,9 @@ async function detectLoop() {
   let highest = predictions.reduce((prev, current) =>
     prev.probability > current.probability ? prev : current
   );
-
+  
   const label = highest.className;
   const probability = highest.probability;
-
-  if (stableFrames < 7) {
-    return requestAnimationFrame(detectLoop);
-  }
 
   updateSidebar(label, probability, predictions);
 
@@ -173,7 +169,7 @@ async function detectLoop() {
     if (label !== "empty_belt") {
       console.log(label, probability);
       const bin = decideBin(label);
-      if (bin !== null && stableFrames >= 7) { // Only send if stable for 7 frames (~0.23s at 30fps)
+      if (bin !== null) { // Only send if stable for 7 frames
         const message = `BIN_${bin}`;
         // Only send once when high-confidence label changes
         if (currentLabel !== label) {
@@ -184,10 +180,8 @@ async function detectLoop() {
         }
       }
       currentLabel = label;
-      stableFrames = 1;
     } else {
       currentLabel = "empty_belt";
-      stableFrames++;
     }
   }
 
