@@ -163,6 +163,9 @@ async function detectLoop() {
   const label = highest.className;
   const probability = highest.probability;
 
+  if (stableFrames < 7) {
+    return requestAnimationFrame(detectLoop);
+  }
 
   updateSidebar(label, probability, predictions);
 
@@ -170,17 +173,21 @@ async function detectLoop() {
     if (label !== "empty_belt") {
       console.log(label, probability);
       const bin = decideBin(label);
-      if (bin !== null) {
+      if (bin !== null && stableFrames >= 7) { // Only send if stable for 7 frames (~0.23s at 30fps)
         const message = `BIN_${bin}`;
         // Only send once when high-confidence label changes
         if (currentLabel !== label) {
           await sendToESP32(message);
           console.log("Sent", message, "at", performance.now().toFixed(2), "ms");
+        } else {
+          return;
         }
       }
       currentLabel = label;
+      stableFrames = 1;
     } else {
       currentLabel = "empty_belt";
+      stableFrames++;
     }
   }
 
