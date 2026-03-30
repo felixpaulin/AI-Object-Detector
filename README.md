@@ -8,13 +8,11 @@ Note: the esp32_sim.py file is for testing, if you want to use it then launch it
 
 Features
 
-- Live webcam object detection
-- Real-time bounding boxes and object IDs
-- Object tracking across frames
-- Click-to-label learning system
-- Persistent memory using browser localStorage
+- Live webcam object classification
+- Click-to-connect webSerial connection system
 - Visual sidebar showing names of detected objects
 - Fully client-side (no backend)
+- Low resource usage
 
 ---
 
