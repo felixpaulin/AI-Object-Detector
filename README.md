@@ -1,4 +1,4 @@
-This is a browser-based AI object detector that uses a webcam to detect objects in real time and allows the user to teach the system new object by clicking on detected objects and entering the name of the object into the prompt box.
+This is a browser-based AI object detector that uses a webcam to classify objects to send them to a ESP32, This is for a AI sorting system made for the Vienna International Science and Engineering Fair.
 
 The AI object detector runs entirely on the client side using JavaScript and TensorFlow.js and only requires the user to launch the start-server.bat file to open the browser in localhost.
 
@@ -23,19 +23,16 @@ Features
 - HTML5 & CSS
 - JavaScript
 - TensorFlow.js
-- COCO-SSD object detection model
-- Browser APIs (Webcam, Canvas, localStorage)
+- Teachable Machine image classification
+- Browser APIs (Webcam, Canvas, WebSerial)
 
 ---
 
 ## How It Works
 
 1. The browser accesses the webcam and displays the video feed.
-2. A pre-trained AI model (COCO-SSD) detects objects in each video frame.
-3. Detected objects are tracked across frames using position matching.
-4. The user can click on an object and assign it a custom label.
-5. Learned labels are stored locally in the browser and reused automatically.
-
+2. A custom-trained AI model (Teachable Machine) classifies objects in each video frame.
+3. To connect to the ESP32 via Webserial click on the screen to open your browsers serial port connect menu, connect from there.
 ---
 
 ## How to Run the Project Locally
@@ -44,4 +41,4 @@ Due to browser security restrictions, the project must be run using a local HTTP
 
 1: Run the start-server.bat file to launch a browser window in localhost
 2: The batch file will also automatically start the ai detector
-3: Enjoy (Note: this will not detect keyboards as they are ignored becuase this is for a sorting conveyer belt and the model thought the belt was a keyboard. If you wish to change this, then remove line 146 (this line: if (p.class === "keyboard") return; ) 
+3: Enjoy (Note: Model is a custom trained clasification model that is trained under certain conditions, it will not correctyl classify objects that it is not trained on.
