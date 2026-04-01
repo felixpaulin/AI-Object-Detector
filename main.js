@@ -186,9 +186,9 @@ async function detectLoop() {
       }
       if (detection.stableFrames >= STABILITY_THRESHOLD && !detection.sent) {
         const bin = decideBin(label);
-
-      if (bin !== null) { // Only send if stable for 7 frames
         const message = `BIN_${bin}`;
+
+      if (bin !== null) {
           await sendToESP32(message);
           console.log("Sent", message, "at", performance.now().toFixed(2), "ms");
 
