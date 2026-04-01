@@ -175,7 +175,7 @@ async function detectLoop() {
   updateSidebar(label, probability, predictions);
 
   if (probability >= CONFIDENCE_THRESHOLD) {
-    if (label !== "empty_belt" && detection.label !== null) {
+    if (label !== "empty_belt") {
       console.log(label, probability);
       if (label === detection.label) {
         detection.stableFrames++;
@@ -188,7 +188,7 @@ async function detectLoop() {
         const bin = decideBin(label);
         const message = `BIN_${bin}`;
 
-      if (bin !== null) {
+        if (bin !== null) {
           await sendToESP32(message);
           console.log("Sent", message, "at", performance.now().toFixed(2), "ms");
 
