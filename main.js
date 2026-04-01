@@ -191,6 +191,7 @@ async function detectLoop() {
         if (bin !== null) {
           await sendToESP32(message);
           console.log("Sent", message, "at", performance.now().toFixed(2), "ms");
+          console.log("Stable frames:", detection.stableFrames);
 
           detection.sent = true;
         } else {
