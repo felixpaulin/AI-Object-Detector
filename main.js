@@ -11,6 +11,15 @@ const video = document.getElementById("video");
 const status = document.getElementById("status");
 const objectList = document.getElementById("objectList");
 
+//---------- Properties simulation vsriable for tracking stable frames ----------
+let detection = {
+  label: null,
+  stableFrames: 0,
+  sent: false
+}
+
+const STABILITY_THRESHOLD = 7;
+
 // ---------- MODEL ----------
 let model;
 const MODEL_URL = "model/model.json";
@@ -166,15 +175,24 @@ async function detectLoop() {
   updateSidebar(label, probability, predictions);
 
   if (probability >= CONFIDENCE_THRESHOLD) {
-    if (label !== "empty_belt") {
+    if (label !== "empty_belt" && detection.label !== null) {
       console.log(label, probability);
-      const bin = decideBin(label);
+      if (label === detection.label) {
+        detection.stableFrames++;
+      } else {
+        detection.label = label;
+        detection.stableFrames = 1;
+        detection.sent = false;
+      }
+      if (detection.stableFrames >= STABILITY_THRESHOLD && !detection.sent) {
+        const bin = decideBin(label);
+
       if (bin !== null) { // Only send if stable for 7 frames
         const message = `BIN_${bin}`;
-        // Only send once when high-confidence label changes
-        if (currentLabel !== label) {
           await sendToESP32(message);
           console.log("Sent", message, "at", performance.now().toFixed(2), "ms");
+
+          detection.sent = true;
         } else {
           return;
         }
@@ -182,6 +200,9 @@ async function detectLoop() {
       currentLabel = label;
     } else {
       currentLabel = "empty_belt";
+      detection.label = null;
+      detection.stableFrames = 1;
+      detection.sent = false;
     }
   }
 
