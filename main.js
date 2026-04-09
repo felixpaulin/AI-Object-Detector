@@ -11,7 +11,7 @@ const video = document.getElementById("video");
 const status = document.getElementById("status");
 const objectList = document.getElementById("objectList");
 
-//---------- Properties simulation vsriable for tracking stable frames ----------
+//---------- Property simulation variable for tracking stable frames ----------
 let detection = {
   label: null,
   stableFrames: 0,
@@ -190,8 +190,9 @@ async function detectLoop() {
 
         if (bin !== null) {
           await sendToESP32(message);
-          console.log("Sent", message, "at", performance.now().toFixed(2), "ms");
+          console.log("Sent", detection.label, message, "at", performance.now().toFixed(2), "ms");
           console.log("Stable frames:", detection.stableFrames);
+          console.log("Readable/Writable:", !!espPort?.readable, !!espPort?.writable,);
 
           detection.sent = true;
         } else {
