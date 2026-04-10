@@ -147,22 +147,11 @@ function decideBin(label) {
 // ---------- SIDEBAR UPDATE ----------
 function updateSidebar(label, probability, predictions) {
   objectList.innerHTML = "";
-  
-  // Assign a color to each of your 4 classes
-  const colors = ["#ff8800", "#0099ff", "#c800ff", "#fff700"]; 
 
-  predictions.map((pred, index) => {
+  predictions.forEach(pred => {
     const pcal = (pred.probability * 100).toFixed(1);
     const li = document.createElement("li");
-    
-    // Injects the name, percentage, and the bar divs
-    li.innerHTML = `
-      <div>${pred.className}: ${pcal}%</div>
-      <div class="bar-container">
-        <div class="bar-fill" style="width: ${pcal}%; background: ${colors[index]}"></div>
-      </div>
-    `;
-    
+    li.textContent = `${pred.className}: ${pcal}%`;
     objectList.appendChild(li);
   });
 }
