@@ -145,20 +145,32 @@ function decideBin(label) {
 }
 
 // ---------- SIDEBAR UPDATE ----------
-function updateSidebar(label, probability,predictions) {
+function updateSidebar(label, probability, predictions) {
   objectList.innerHTML = "";
+  
+  // Assign a color to each of your 4 classes
+  const colors = ["#ff8800", "#0099ff", "#c800ff", "#fff700"]; 
 
-  predictions.map(pred => {
+  predictions.map((pred, index) => {
+    const pcal = (pred.probability * 100).toFixed(1);
     const li = document.createElement("li");
-    li.textContent = `${pred.className} (${(pred.probability * 100).toFixed(1)}%)`;
+    
+    // Injects the name, percentage, and the bar divs
+    li.innerHTML = `
+      <div>${pred.className}: ${pcal}%</div>
+      <div class="bar-container">
+        <div class="bar-fill" style="width: ${pcal}%; background: ${colors[index]}"></div>
+      </div>
+    `;
+    
     objectList.appendChild(li);
-  } 
-);
+  });
+}
 
 //  const li = document.createElement("li");
 //  li.textContent = `${label} (${(probability * 100).toFixed(1)}%)`;
 //  objectList.appendChild(li);
-}
+
 
 // ---------- DETECTION LOOP ----------
 async function detectLoop() {
