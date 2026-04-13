@@ -18,15 +18,15 @@ let detection = {
   sent: false
 }
 
-const STABILITY_THRESHOLD = 7;
+const Stability_Threshold = 7;
 
 // ---------- MODEL ----------
 let model;
-const MODEL_URL = "model/model.json";
-const METADATA_URL = "model/metadata.json";
+const Model = "model/model.json";
+const Metadata = "model/metadata.json";
 
 // ---------- THRESHOLD ----------
-const CONFIDENCE_THRESHOLD = 0.7;
+const Confidence_Threshold = 0.7;
 
 // ---------- STATE ----------
 let currentLabel = "empty_belt";
@@ -35,7 +35,7 @@ let currentLabel = "empty_belt";
 let espPort = null;
 let connectPromise = null;
 
-const ESP_BAUD = 115200;
+const Esp_Baud = 115200;
 
 async function closeESP32() {
   try {
@@ -59,7 +59,7 @@ async function connectESP32() {
 
       if (!espPort.readable || !espPort.writable) {
         await espPort.open({
-          baudRate: ESP_BAUD,
+          baudRate: Esp_Baud,
           flowControl: "none",
         });
       }
@@ -132,7 +132,7 @@ async function startCamera() {
 
 // ---------- LOAD MODEL ----------
 async function loadModel() {
-  model = await tmImage.load(MODEL_URL, METADATA_URL);
+  model = await tmImage.load(Model, Metadata);
   status.innerText = "Model loaded. Detecting...";
 }
 
@@ -175,7 +175,7 @@ async function detectLoop() {
 
   updateSidebar(label, probability, predictions);
 
-  if (probability >= CONFIDENCE_THRESHOLD) {
+  if (probability >= Confidence_Threshold) {
     if (label !== "empty_belt") {
       console.log(label, probability);
       if (label === detection.label) {
@@ -185,7 +185,7 @@ async function detectLoop() {
         detection.stableFrames = 1;
         detection.sent = false;
       }
-      if (detection.stableFrames >= STABILITY_THRESHOLD && !detection.sent) {
+      if (detection.stableFrames >= Stability_Threshold && !detection.sent) {
         const bin = decideBin(label);
         const message = `BIN_${bin}`;
 
